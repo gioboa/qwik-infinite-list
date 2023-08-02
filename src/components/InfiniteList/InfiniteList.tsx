@@ -17,12 +17,8 @@ export default component$<InfiniteListProps>(({ loadMore, onLoadMore$ }) => {
 	useVisibleTask$(() => {
 		if (listSig.value) {
 			const intersectionObserver = new IntersectionObserver(
-				([{ isIntersecting }]) => {
-					if (isIntersecting) {
-						onLoadMore$();
-					}
-				},
-				{ rootMargin: '150%', threshold: 0 }
+				([{ isIntersecting }]) => isIntersecting && onLoadMore$(),
+				{ rootMargin: '150%' }
 			);
 			intersectionObserver.observe(listSig.value);
 		}
