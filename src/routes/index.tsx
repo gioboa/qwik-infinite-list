@@ -1,25 +1,33 @@
-import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import {
+	$,
+	component$,
+	useSignal
+} from '@builder.io/qwik';
+import InfiniteList from '~/components/InfiniteList/InfiniteList';
+import Item from '~/components/Item/Item';
+import LoadingScheleton from '~/components/LoadingScheleton/LoadingScheleton';
+
 
 export default component$(() => {
-  return (
-    <>
-      <h1>Hi 👋</h1>
-      <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </p>
-    </>
-  );
-});
+	const loadMore = useSignal(true);
+	const itemsSig = useSignal([...new Array(5).keys()]);
 
-export const head: DocumentHead = {
-  title: "Welcome to Qwik",
-  meta: [
-    {
-      name: "description",
-      content: "Qwik site description",
-    },
-  ],
-};
+	return (
+		<div class='flex flex-col items-center'>
+			<InfiniteList
+				loadMore={loadMore.value}
+				onLoadMore$={$(() => {
+					itemsSig.value = [...itemsSig.value, ...new Array(5).keys()];
+					loadMore.value = Math.random() > 0.1;
+				})}
+			>
+				{itemsSig.value.map((_, key) => (
+					<Item key={key} />
+				))}
+				<div q:slot='loading' >
+					<LoadingScheleton />
+				</div>
+			</InfiniteList>
+		</div>
+	);
+});
